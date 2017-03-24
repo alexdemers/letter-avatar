@@ -133,7 +133,7 @@ class LetterAvatar
 
         $char_index  = ord($this->name_initials[0]) - 64;
         $color_index = $char_index % 20;
-        $color       = $colors[$color_index];
+        $color = !empty($colors[$color_index]) ? $colors[$color_index] : $colors[rand(0, count($colors)-1)];
 
 
         if ($this->shape == 'circle') {
