@@ -167,7 +167,7 @@ class LetterAvatar {
 	 * @return int
 	 */
 	public static function unicode_ord( $character ) {
-		$k  = mb_convert_encoding( $u, 'UCS-2LE', 'UTF-8' );
+		$k  = mb_convert_encoding( $character, 'UCS-2LE', 'UTF-8' );
 		$k1 = ord( substr( $k, 0, 1 ) );
 		$k2 = ord( substr( $k, 1, 1 ) );
 
