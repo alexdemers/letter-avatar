@@ -115,8 +115,8 @@ class LetterAvatar {
 
 		$color_index = self::unicode_ord($initials[0]) % count(self::$colors);
 
-		if (!empty(self::$colors[$color_index])) {
-			$color_index = rand(0, count(self::$colors - 1));
+		if (empty(self::$colors[$color_index])) {
+			$color_index = rand(0, count(self::$colors) - 1);
 		}
 
 		$color = self::$colors[$color_index];
