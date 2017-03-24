@@ -133,7 +133,7 @@ class LetterAvatar {
 			$canvas = $this->image_manager->canvas( 480, 480, $color );
 		}
 
-		$canvas->text( $initials, 240, 240, function ( $font ) {
+		$canvas->text( implode('', array_slice($initials, 0, 2)), 240, 240, function ( $font ) {
 			$font->file( __DIR__ . '/fonts/arial-bold.ttf' );
 			$font->size( 220 );
 			$font->color( '#ffffff' );
