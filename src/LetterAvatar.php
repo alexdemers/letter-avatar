@@ -4,175 +4,174 @@ namespace YoHang88\LetterAvatar;
 
 use Intervention\Image\ImageManager;
 
-class LetterAvatar
-{
-    /**
-     * @var string
-     */
-    protected $name;
+class LetterAvatar {
+	/**
+	 * I used colors from the material design palette
+	 *
+	 * @var array
+	 */
+	public static $colors = [
+		"#EF5350", "#B71C1C", "#F06292", "#880E4F", "#BA68C8", "#4A148C",
+		"#9575CD", "#311B92", "#7986CB", "#283593", "#2196F3", "#1565C0",
+		"#039BE5", "#01579B", "#0097A7", "#006064", "#009688", "#004D40",
+		"#43A047", "#1B5E20", "#689F38", "#33691E", "#AFB42B", "#827717",
+		"#FDD835", "#F57F17", "#FFC107", "#FF6F00", "#FB8C00", "#E65100",
+		"#FF5722", "#BF360C", "#A1887F", "#3E2723", "#757575", "#212121"
+	];
+
+	/**
+	 * @var string
+	 */
+	protected $name;
 
 
-    /**
-     * @var string
-     */
-    protected $name_initials;
+	/**
+	 * @var string
+	 */
+	protected $shape;
 
 
-    /**
-     * @var string
-     */
-    protected $shape;
+	/**
+	 * @var int
+	 */
+	protected $size;
+
+	/**
+	 * @var ImageManager
+	 */
+	protected $image_manager;
 
 
-    /**
-     * @var int
-     */
-    protected $size;
+	public function __construct( $name, $shape = 'circle', $size = '48' ) {
+		$this->setName( $name );
+		$this->setImageManager( new ImageManager() );
+		$this->setShape( $shape );
+		$this->setSize( $size );
+	}
 
-    /**
-     * @var ImageManager
-     */
-    protected $image_manager;
+	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
+	}
 
+	/**
+	 * @param string $name
+	 */
+	public function setName( $name ) {
+		$this->name = $name;
+	}
 
-    public function __construct($name, $shape = 'circle', $size = '48')
-    {
-        $this->setName($name);
-        $this->setImageManager(new ImageManager());
-        $this->setShape($shape);
-        $this->setSize($size);
-    }
+	/**
+	 * @return ImageManager
+	 */
+	public function getImageManager() {
+		return $this->image_manager;
+	}
 
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * @param ImageManager $image_manager
+	 */
+	public function setImageManager( ImageManager $image_manager ) {
+		$this->image_manager = $image_manager;
+	}
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
+	/**
+	 * @return string
+	 */
+	public function getShape() {
+		return $this->shape;
+	}
 
-    /**
-     * @return ImageManager
-     */
-    public function getImageManager()
-    {
-        return $this->image_manager;
-    }
+	/**
+	 * @param string $shape
+	 */
+	public function setShape( $shape ) {
+		$this->shape = $shape;
+	}
 
-    /**
-     * @param ImageManager $image_manager
-     */
-    public function setImageManager(ImageManager $image_manager)
-    {
-        $this->image_manager = $image_manager;
-    }
+	/**
+	 * @return int
+	 */
+	public function getSize() {
+		return $this->size;
+	}
 
-    /**
-     * @return string
-     */
-    public function getShape()
-    {
-        return $this->shape;
-    }
-
-    /**
-     * @param string $shape
-     */
-    public function setShape($shape)
-    {
-        $this->shape = $shape;
-    }
-
-    /**
-     * @return int
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
-    /**
-     * @param int $size
-     */
-    public function setSize($size)
-    {
-        $this->size = $size;
-    }
+	/**
+	 * @param int $size
+	 */
+	public function setSize( $size ) {
+		$this->size = $size;
+	}
 
 
-    /**
-     * @return \Intervention\Image\Image
-     */
-    public function generate()
-    {
-        $words = $this->break_words($this->name);
+	/**
+	 * @return \Intervention\Image\Image
+	 */
+	public function generate() {
 
-        $number_of_word = 1;
-        foreach ($words as $word) {
+		$initials = self::getInitials($this->name);
 
-            if ($number_of_word > 2)
-                break;
+		$color_index = uniord($initials[0]) % count(self::$colors);
 
-            $this->name_initials .= mb_strtoupper(trim($word[0]));
+		if (!empty(self::$colors[$color_index])) {
+			$color_index = rand(0, count(self::$colors - 1));
+		}
 
-            $number_of_word++;
-        }
+		$color = self::$colors[$color_index];
 
-        $colors = [
-            "#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50",
-            "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d",
-        ];
+		if ( $this->shape == 'circle' ) {
+			$canvas = $this->image_manager->canvas( 480, 480 );
 
-        $char_index  = ord($this->name_initials[0]) - 64;
-        $color_index = $char_index % 20;
-        $color = !empty($colors[$color_index]) ? $colors[$color_index] : $colors[rand(0, count($colors)-1)];
+			$canvas->circle( 480, 240, 240, function ( $draw ) use ( $color ) {
+				$draw->background( $color );
+			} );
 
+		} else {
 
-        if ($this->shape == 'circle') {
-            $canvas = $this->image_manager->canvas(480, 480);
+			$canvas = $this->image_manager->canvas( 480, 480, $color );
+		}
 
-            $canvas->circle(480, 240, 240, function ($draw) use ($color) {
-                $draw->background($color);
-            });
+		$canvas->text( $initials, 240, 240, function ( $font ) {
+			$font->file( __DIR__ . '/fonts/arial-bold.ttf' );
+			$font->size( 220 );
+			$font->color( '#ffffff' );
+			$font->valign( 'middle' );
+			$font->align( 'center' );
+		} );
 
-        } else {
+		return $canvas->resize( $this->size, $this->size );
+	}
 
-            $canvas = $this->image_manager->canvas(480, 480, $color);
-        }
+	public function __toString() {
+		return (string) $this->generate()->encode( 'data-url' );
+	}
 
-        $canvas->text($this->name_initials, 240, 240, function ($font) {
-            $font->file(__DIR__ . '/fonts/arial-bold.ttf');
-            $font->size(220);
-            $font->color('#ffffff');
-            $font->valign('middle');
-            $font->align('center');
-        });
+	/**
+	 * Returns an array of capitalised first letter of each names
+	 *
+	 * @param $name
+	 * @return array
+	 */
+	public static function getInitials($name) {
+		return array_map(function($item) {
+			return mb_substr(mb_strtoupper($item), 0, 1, 'UTF-8');
+		}, explode(' ', $name));
+	}
 
-        return $canvas->resize($this->size, $this->size);
-    }
+	/**
+	 * Like ord() but for unicode
+	 *
+	 * @param $character
+	 * @return int
+	 */
+	public static function unicode_ord( $character ) {
+		$k  = mb_convert_encoding( $u, 'UCS-2LE', 'UTF-8' );
+		$k1 = ord( substr( $k, 0, 1 ) );
+		$k2 = ord( substr( $k, 1, 1 ) );
 
-    public function __toString()
-    {
-        return (string) $this->generate()->encode('data-url');
-    }
-
-    public function break_words($name) {
-        $temp_word_arr = explode(' ', $name);
-        $final_word_arr = array();
-        foreach ($temp_word_arr as $key => $word) {
-            if( $word != "" && $word != ",") {
-                $final_word_arr[] = $word;
-            }
-        }
-        return $final_word_arr;
-    }
+		return $k2 * 256 + $k1;
+	}
 
 }
