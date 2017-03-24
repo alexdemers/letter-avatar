@@ -113,7 +113,7 @@ class LetterAvatar {
 
 		$initials = self::getInitials($this->name);
 
-		$color_index = uniord($initials[0]) % count(self::$colors);
+		$color_index = self::unicode_ord($initials[0]) % count(self::$colors);
 
 		if (!empty(self::$colors[$color_index])) {
 			$color_index = rand(0, count(self::$colors - 1));
